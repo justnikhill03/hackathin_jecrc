@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFELINE - Ambulance Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom right, #e9ecef, #ffffff);
+        }
+        .top-section {
+            background-color: #dc3545;
+            height: 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        .title i {
+            margin-right: 10px;
+            font-size: 40px;
+        }
+        .profile {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .profile:hover {
+            transform: scale(1.1);
+        }
+        .settings-button {
+            background-color: white;
+            color: #dc3545;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+        }
+        .settings-button:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.05);
+        }
+        .map-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .info-bar {
+            width: 80%;
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: #495057;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+        .info-bar:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .info-bar i {
+            margin-right: 10px;
+            color: #dc3545;
+            font-size: 22px;
+        }
+        #map {
+            width: 80%;
+            height: 300px; /* Adjusted height */
+            border: 2px solid #ced4da;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            transition: transform 0.3s;
+        }
+        #map:hover {
+            transform: scale(1.02);
+        }
+        .bottom-section {
+            background-color: white;
+            height: 15%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            margin: 0 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .sidebar, .settings-sidebar {
+            width: 250px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: none; /* Initially hidden */
+            position: absolute;
+            top: 10%;
+            height: 90%;
+            z-index: 10;
+            overflow-y: auto;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .sidebar button, .settings-sidebar button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .sidebar button:hover, .settings-sidebar button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: none; /* Initially hidden */
+        }
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-section">
+        <button class="settings-button" onclick="toggleSettingsSidebar()">Settings</button>
+        <div class="title" onclick="sendSOS()">
+            <i class="fas fa-ambulance"></i>
+            LIFELINE
+        </div>
+        <div class="profile" onclick="showProfile()">User Profile</div>
+    </div>
+
+    <div class="map-container">
+        <div class="info-bar">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="currentLocation">Your Location: [Your Current Location]</span>
+        </div>
+        <div class="info-bar">
+            <i class="fas fa-hospital"></i>
+            <span id="nearestHospital">Nearest Hospital: [Hospital Location]</span>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <div class="bottom-section">
+        <button onclick="book()">Book</button>
+        <button onclick="call()">Call</button>
+    </div>
+
+    <div class="sidebar" id="profileSidebar">
+        <button onclick="showSection('mobile')">Mobile Number</button>
+        <button onclick="showSection('address')">Address</button>
+        <button onclick="showSection('hospital')">Set Hospital Address</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="settings-sidebar" id="settingsSidebar">
+        <button onclick="toggleLocationAccess()">Turn On Location</button>
+        <button onclick="showPrivacy()">Privacy</button>
+    </div>
+
+    <div class="content" id="profileContent">
+        <h2>User Profile</h2>
+        <div id="info">
+            <p>Select an option from the left to view details.</p>
+        </div>
+    </div>
+
+    <script>
+        let locationAccess = true;
+
+        function toggleLocationAccess() {
+            locationAccess = !locationAccess;
+            alert(locationAccess ? 'Location access is now ON.' : 'Location access is now OFF.');
+        }
+
+        function sendSOS() {
+            alert('SOS is CALLED!');
+            book(); // Automatically books the ambulance
+        }
+
+        function book() {
+            displayLoading('Booking Ambulance...');
+            setTimeout(() => {
+                alert('Ambulance booked successfully!');
+                hideLoading();
+            }, 2000);
+        }
+
+        function call() {
+            displayLoading('Calling Ambulance...');
+            setTimeout(() => {
+                alert('Ambulance call made successfully!');
+                hideLoading();
+            }, 2000);
+        }
+
+        function displayLoading(message) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerText = message;
+            loadingDiv.style.position = 'fixed';
+            loadingDiv.style.top = '50%';
+            loadingDiv.style.left = '50%';
+            loadingDiv.style.transform = 'translate(-50%, -50%)';
+            loadingDiv.style.padding = '20px';
+            loadingDiv.style.backgroundColor = '#ffffff';
+            loadingDiv.style.border = '2px solid #007BFF';
+            loadingDiv.style.borderRadius = '10px';
+            loadingDiv.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.3)';
+            loadingDiv.style.zIndex = '1000';
+            document.body.appendChild(loadingDiv);
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.querySelector('div[style*="fixed"]');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        function showProfile() {
+            document.getElementById('profileSidebar').style.display = 'block';
+            document.getElementById('profileContent').style.display = 'block';
+            document.getElementById('profileContent').classList.add('fade-in');
+            document.getElementById('settingsSidebar').style.display = 'none'; // Ensure settings are hidden
+        }
+
+        function toggleSettingsSidebar() {
+            const settingsSidebar = document.getElementById('settingsSidebar');
+            const isVisible = settingsSidebar.style.display === 'block';
+            settingsSidebar.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                document.getElementById('profileSidebar').style.display = 'none'; // Hide profile sidebar
+                document.getElementById('profileContent').style.display = 'none'; // Hide profile content
+            }
+        }
+
+        function showSection(section) {
+            const infoDiv = document.getElementById('info');
+            switch (section) {
+                case 'mobile':
+                    infoDiv.innerHTML = '<p><strong>Mobile Number:</strong> +1234567890</p>';
+                    break;
+                case 'address':
+                    infoDiv.innerHTML = '<p><strong>Address:</strong> 123 Main St, City, Country</p>';
+                    break;
+                case 'hospital':
+                    infoDiv.innerHTML = '<p><strong>Set Hospital Address:</strong> 456 Hospital Rd, City, Country</p>';
+                    break;
+                default:
+                    infoDiv.innerHTML = '<p>Select an option from the left to view details.</p>';
+            }
+        }
+
+        function showPrivacy() {
+            alert('Privacy settings will be displayed here.');
+        }
+
+        function logout() {
+            alert('Logging out...');
+            window.location.href = 'login.html'; // Change to your login page URL
+        }
+
+        // Initialize Google Maps
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: -34.397, lng: 150.644 }, // Set default center
+                zoom: 8,
+            });
+
+            // Add a marker for the ambulance location (example)
+            const marker = new google.maps.Marker({
+                position: { lat: -34.397, lng: 150.644 }, // Change to your ambulance location
+                map: map,
+                title: "Ambulance Location",
+            });
+
+            updateLocation('Your Current Location', 'Nearest Hospital');
+        }
+
+        function updateLocation(userLocation, hospitalLocation) {
+            document.getElementById('currentLocation').innerText = `Your Location: ${userLocation}`;
+            document.getElementById('nearestHospital').innerText = `Nearest Hospital: ${hospitalLocation}`;
+        }
+    </script>
+
+    <!-- Load Google Maps JavaScript API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+
+</body>
+</html>
